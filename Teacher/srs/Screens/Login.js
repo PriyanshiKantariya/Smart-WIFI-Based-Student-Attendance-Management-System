@@ -14,7 +14,7 @@ const LoginPage = () => {
 
 
     const handleLogin = () => {
-        fetch('http://10.10.12.25:5000/auth/login', {
+        fetch('http://10.10.12.25:5001/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -29,6 +29,7 @@ const LoginPage = () => {
             if (data.success) {
                 // Save token to SecureStore
                 SecureStore.setItemAsync('userToken', data.token);
+                SecureStore.setItemAsync('name', data.name);
                 SecureStore.setItemAsync('usernaame', username);
                 setIsAuthenticated(true);
     

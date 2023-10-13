@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from 'react';
 import { View, Text,SafeAreaView, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import {Button} from 'react-native-paper';
-import * as SecureStore from 'expo-secure-store';
+import { useIsFocused } from '@react-navigation/native';
+import { getUsername } from '../Components/utility';
+import { useState,useEffect } from 'react';
 
-
-export const getUsername = async () => {
-  try {
-    return await SecureStore.getItemAsync('usernaame');
-  } catch (e) {
-    console.error('Failed to fetch the username.', e);
-  }
-};
-
-function Uname() {
-  const [name, setName] = useState('');
+function useUsername() {
+  const [name, setName] = useState(null);
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -31,8 +23,10 @@ function Uname() {
 }
 
 const AttendanceReport = ({ navigation }) => {
-  const [data, setData] = useState(null);
-  const username = '22BCE100';  // Assuming you know the username
+  const [data, setData] = useState();
+ 
+  const username =  useUsername();  // Assuming you know the username
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,16 +34,14 @@ const AttendanceReport = ({ navigation }) => {
         const response = await axios.get(`http://10.0.2.2:3010/getAttendance/${username}`);
         setData(response.data);
       } catch (error) {
-        Alert.alert('Error', 'There was an error fetching the data.');
+        // Alert.alert('Error', 'There was an error fetching the data.');
       }
     };
-
-    fetchData();  // Fetch data immediately on component mount
-
-    const intervalId = setInterval(fetchData, 3000);  // Fetch data every 30 seconds
-
-    return () => clearInterval(intervalId);  // Clear the interval when the component is unmounted
-  }, []);
+    if(isFocused)
+    {
+      fetchData(); 
+    }
+  }, [username, isFocused]);
 
   if (!data) {
     return <Text>Loading...</Text>;
@@ -62,7 +54,8 @@ const AttendanceReport = ({ navigation }) => {
         {data.subjects.map((subject, index) => (
             <View key={index} style={styles.row}>
                 <Text style={styles.cell}>{subject.subjectID}</Text>
-                <Text style={styles.cell}>{subject.attendance.filter(a => a.status === 'present').length}</Text>
+                <Text style={styles.cell}>{subject.attendance.filter(a => a.status === 'Present').length}</Text>
+                <Text style={styles.cell}>{subject.attendance.filter(a => a.status === 'Absent').length}</Text>
                 <Button 
                     mode="contained"
                     onPress={() => navigation.navigate('Details', { attendance: subject.attendance, username: username, subjectID: subject.subjectID })}
@@ -104,7 +97,8 @@ row: {
 cell: {
     flex: 1,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 14,
+    paddingLeft: 5,
 },
 btn: {
     paddingHorizontal: 5,

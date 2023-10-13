@@ -40,7 +40,7 @@ const DetailScreen = ({ route, navigation }) => {
       
       <Button 
         mode="contained"
-        onPress={() => navigation.navigate('Attendance Report')}
+        onPress={() => navigation.goBack()}
         style={styles.backButton}
       >
         Back to Attendance Report
