@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 const DB_URL = 'mongodb://localhost:27017/attendance';
 
 // Connect to MongoDB using Mongoose
@@ -21,7 +23,7 @@ const StudentSchema = new mongoose.Schema({
   }]
 });
 
-const Student = mongoose.model('Student', StudentSchema, 'studatten');
+const Student = mongoose.model('Student', StudentSchema, 'studattens')
 
 // Middleware
 app.use(bodyParser.json());
@@ -57,7 +59,8 @@ app.get('/getAttendance/:username', async (req, res) => {
         }
         res.json(student);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
+
     }
 });
 
