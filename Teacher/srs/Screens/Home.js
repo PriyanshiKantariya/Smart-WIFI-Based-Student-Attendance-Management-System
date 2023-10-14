@@ -7,7 +7,7 @@ import { getUsername } from '../Components/utility';
 import io from 'socket.io-client';
 import { getname } from '../Components/utility';
 
-const socket = io('http://10.0.2.2:3005');
+const socket = io('http://10.10.12.25:3005');
 
 function useUname() { // Rename to signify it's a hook
   const [name, setName] = useState('');
@@ -83,10 +83,12 @@ function App() {
       batch: valueclass,
       visible : true,
     };
+
     if(data.teacherUsername == null || data.selectedSubject == null || data.selectedClassroom == null || data.batch == null)
     {
       Alert.alert('Choose all Options from Dropdown')
-    }else{
+    }
+    else{
     socket.emit('sendMessageToClass', { batch: valueclass, data });
     setAttendanceStarted(true);
     } 
@@ -95,7 +97,7 @@ function App() {
 
   const fetchSubjectValues = async () => {
     try {
-      const response = await axios.get('http://10.0.2.2:5002/get-subject-values');
+      const response = await axios.get('http://10.10.12.25:5002/get-subject-values');
       if (response.data.success) {
         setItemssubject(response.data.data);
       } else {
@@ -130,7 +132,7 @@ function App() {
 
   const fetchClassValues = async () => {
     try {
-      const response = await axios.get('http://10.0.2.2:5002/get-class-values');
+      const response = await axios.get('http://10.10.12.25:5002/get-class-values');
       if (response.data.success) {
         setItemsclass(response.data.data);
       } else {
@@ -143,7 +145,7 @@ function App() {
 
   const fetchRoomValues = async () => {
     try {
-      const response = await axios.get('http://10.0.2.2:5002/get-room-values');
+      const response = await axios.get('http://10.10.12.25:5002/get-room-values');
       if (response.data.success) {
         setItemsroom(response.data.data);
       } else {

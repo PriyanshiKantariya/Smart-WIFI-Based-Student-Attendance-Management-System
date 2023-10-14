@@ -21,7 +21,7 @@ function Uname() {
     return name;
 }
 
-const socket = io('http://10.0.2.2:3005');
+const socket = io('http://10.10.12.25:3005');
 
 export default function Home() {
     const usen = Uname();
@@ -56,7 +56,7 @@ export default function Home() {
 
     const handleAttendance = async (username, subjectID, status) => {
         try {
-            const response = await axios.post('http://10.0.2.2:3010/recordAttendance', {
+            const response = await axios.post('http://10.10.12.25:3010/recordAttendance', {
                 username,
                 subjectID,
                 status
