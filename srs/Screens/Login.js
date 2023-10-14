@@ -14,7 +14,7 @@ const LoginPage = () => {
 
 
     const handleLogin = () => {
-        fetch('http://10.10.12.25:5000/auth/login', {
+        fetch('http://10.10.12.25:3010/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

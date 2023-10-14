@@ -10,7 +10,7 @@ const DetailScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.2:3010/getSubjectAttendance/${username}/${subjectID}`);
+        const response = await axios.get(`http://10.10.12.25:3010/getSubjectAttendance/${username}/${subjectID}`);
         setAttendance(response.data);
       } catch (error) {
         Alert.alert('Error', 'There was an error fetching the attendance details.');
