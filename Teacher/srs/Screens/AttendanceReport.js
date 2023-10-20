@@ -40,7 +40,7 @@ export default function AttendanceApp() {
     // Subjects fetch
     const fetchSubjectValues = async () => {
       try {
-        const response = await axios.get('http://10.10.12.25:5002/get-subject-values');
+        const response = await axios.get('https://teach-node.onrender.com/get-subject-values');
         if (response.data.success) {
           setItemssubject(response.data.data);
         } else {
@@ -53,7 +53,7 @@ export default function AttendanceApp() {
 
     const fetchClassValues = async () => {
       try {
-        const response = await axios.get('http://10.10.12.25:5002/get-class-values');
+        const response = await axios.get('https://teach-node.onrender.com/get-class-values');
         if (response.data.success) {
           setItemsclass(response.data.data);
         } else {
@@ -78,7 +78,7 @@ export default function AttendanceApp() {
   };
 
   const fetchAttendance = () => {
-    axios.get(`http://10.10.12.25:5002/attendance`, {
+    axios.get(`https://teach-node.onrender.com/attendance`, {
       params: {
         subjectId: valuesubject,
         batchValue: valueclass,

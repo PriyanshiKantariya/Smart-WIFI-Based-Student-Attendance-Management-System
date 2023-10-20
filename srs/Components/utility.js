@@ -1,6 +1,5 @@
 
 import * as SecureStore from 'expo-secure-store';
-import { useState, useEffect } from 'react';
 
 export const getUsername = async () => {
   try {
