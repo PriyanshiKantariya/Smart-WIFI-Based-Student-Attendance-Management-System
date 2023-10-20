@@ -14,7 +14,7 @@ const LoginPage = () => {
 
 
     const handleLogin = () => {
-        fetch('http://10.10.12.25:5002/auth/login', {
+        fetch('https://teach-node.onrender.com/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

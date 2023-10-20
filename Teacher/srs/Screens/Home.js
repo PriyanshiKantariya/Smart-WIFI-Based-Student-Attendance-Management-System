@@ -7,7 +7,7 @@ import { getUsername } from '../Components/utility';
 import io from 'socket.io-client';
 import { getname } from '../Components/utility';
 
-const socket = io('http://10.10.12.25:3005');
+const socket = io('https://socket-api-a3lh.onrender.com');
 
 function useUname() { // Rename to signify it's a hook
   const [name, setName] = useState('');
@@ -59,6 +59,10 @@ function App() {
   const [valueroom, setValueroom] = useState(null);
   const [itemsroom, setItemsroom] = useState([]);
 
+
+
+
+
   useEffect(() => {
     socket.on('connect', () => {
       socket.emit('joinRollNumberRoom', userName);
@@ -75,29 +79,40 @@ function App() {
     };
   }, []);
 
-  const handleAttendanceStart = () => {
+  const handleAttendanceStart = async () => {
     const data = {
-      teacherUsername: name, // Use userName from hook
-      selectedSubject: valuesubject,
-      selectedClassroom: valueroom,
-      batch: valueclass,
-      visible : true,
+        teacherUsername: name,
+        selectedSubject: valuesubject,
+        batch: valueclass,
+        visible: true,
+        mac: valueroom,
     };
 
-    if(data.teacherUsername == null || data.selectedSubject == null || data.selectedClassroom == null || data.batch == null)
-    {
-      Alert.alert('Choose all Options from Dropdown')
+
+    if(!data.teacherUsername || !data.selectedSubject || !data.mac || !data.batch) {
+        Alert.alert('Choose all Options from Dropdown');
+    } else {
+        socket.emit('sendMessageToClass', { batch: valueclass, data });
+        setAttendanceStarted(true);
+
+        // Send push notification
+        try {
+            await axios.post('https://teach-node.onrender.com/send-notification', {
+                batch: valueclass, // Pass the batch value here
+                title: "New Attendance Session",
+                message: `Attendance started by ${name} for subject ${data.selectedSubject}. Please mark your attendance.`
+            });
+        } catch (error) {
+            console.error("Error sending notification:", error);
+        }
     }
-    else{
-    socket.emit('sendMessageToClass', { batch: valueclass, data });
-    setAttendanceStarted(true);
-    } 
-  };
+};
+
 
 
   const fetchSubjectValues = async () => {
     try {
-      const response = await axios.get('http://10.10.12.25:5002/get-subject-values');
+      const response = await axios.get('https://teach-node.onrender.com/get-subject-values');
       if (response.data.success) {
         setItemssubject(response.data.data);
       } else {
@@ -111,15 +126,12 @@ function App() {
   const handleAttendanceStop = () => {
     setAttendanceStarted(false); // Set attendance mode to stopped
 
-
-
-
     const data = {
-      teacherUsername: userName, // Use userName from hook
+      teacherUsername: name, // Use userName from hook
       selectedSubject: valuesubject,
-      selectedClassroom: valueroom,
       batch: valueclass,
       visible : false,
+      mac : valueroom,
     };
     
     socket.emit('sendMessageToClass', { batch: valueclass, data });
@@ -132,7 +144,7 @@ function App() {
 
   const fetchClassValues = async () => {
     try {
-      const response = await axios.get('http://10.10.12.25:5002/get-class-values');
+      const response = await axios.get('https://teach-node.onrender.com/get-class-values');
       if (response.data.success) {
         setItemsclass(response.data.data);
       } else {
@@ -145,7 +157,7 @@ function App() {
 
   const fetchRoomValues = async () => {
     try {
-      const response = await axios.get('http://10.10.12.25:5002/get-room-values');
+      const response = await axios.get('https://teach-node.onrender.com/get-room-values');
       if (response.data.success) {
         setItemsroom(response.data.data);
       } else {
@@ -196,6 +208,7 @@ function App() {
         searchClearIcon={{ name: "close", size: 18 }}
       />
       <Text style={styles.text}>ClassRoom : </Text>
+      
       <DropDownPicker
         style={styles.picker}
         dropDownContainerStyle={styles.dropDown}
@@ -204,7 +217,7 @@ function App() {
         zIndexInverse={3}
         open={openroom}
         value={valueroom}
-        items={itemsroom.map(i => ({ label: i.value, value: i.value }))}
+        items={itemsroom.map(i => ({ label: i.label, value: i.value }))}
         setOpen={setOpenroom}
         setValue={setValueroom}
         searchable={true}

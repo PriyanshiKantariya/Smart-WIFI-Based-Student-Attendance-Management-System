@@ -4,6 +4,11 @@ import axios from 'axios';
 import { Card, Button, Title,Text, Paragraph } from 'react-native-paper';
 import { getUsername } from '../Components/utility';
 import io from 'socket.io-client';
+import { NetworkInfo } from 'react-native-network-info';
+
+
+
+
 
 function Uname() {
     const [name, setName] = useState('');
@@ -21,20 +26,29 @@ function Uname() {
     return name;
 }
 
-const socket = io('http://10.10.12.25:3005');
+
+const socket = io('https://socket-api-a3lh.onrender.com');
 
 export default function Home() {
     const usen = Uname();
     const [isCardVisible, setCardVisibility] = useState(false);
     const [sessionData, setSessionData] = useState({});
     const isAttendedRef = useRef(false);
+    const [routermac, setroutermac] = useState('');
+
 
     useEffect(() => {
+      
+        const getBSSID = async () => {
+            const fetchedBSSID = await NetworkInfo.getBSSID();
+            setroutermac(fetchedBSSID);
+         };
+      
+         getBSSID();
         socket.emit('joinRollNumberRoom', usen);
 
         socket.on('receiveMessage', (data) => {
             setSessionData(data);
-            console.log(data.visible);
             if(data.visible)
             {
                 isAttendedRef.current = false;
@@ -50,13 +64,14 @@ export default function Home() {
         // Cleanup the listener when the component unmounts
         return () => {
             socket.off('receiveMessage');
+
         };
        
     }, [usen]);
 
     const handleAttendance = async (username, subjectID, status) => {
         try {
-            const response = await axios.post('http://10.10.12.25:3010/recordAttendance', {
+            const response = await axios.post('https://stud-atten.onrender.com/recordAttendance', {
                 username,
                 subjectID,
                 status
@@ -77,9 +92,15 @@ export default function Home() {
     };
 
     const handleButtonClick = () => {
+        if(routermac === sessionData.mac)
+        {
         handleAttendance(usen, sessionData.selectedSubject, 'Present');
         isAttendedRef.current = true; // Set attendance status to true after student submits
         toggleCardVisibility();
+        }
+        else{
+            Alert.alert("Connect to Class Access Point");
+        }
     };
 
     return (
@@ -92,7 +113,6 @@ export default function Home() {
                     </Card.Content>
                     <Card.Content>
                         <Paragraph>Faculty: {sessionData.teacherUsername}</Paragraph>
-                        <Paragraph>Class: {sessionData.selectedClassroom}</Paragraph>
                         <Paragraph>Batch: {sessionData.batch}</Paragraph>
                     </Card.Content>
                     <Card.Actions>

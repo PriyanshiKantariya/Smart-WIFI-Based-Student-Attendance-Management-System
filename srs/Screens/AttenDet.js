@@ -31,7 +31,7 @@ const AttendanceReport = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.10.12.25:3010/getAttendance/${username}`);
+        const response = await axios.get(`https://stud-atten.onrender.com/getAttendance/${username}`);
         setData(response.data);
       } catch (error) {
         // Alert.alert('Error', 'There was an error fetching the data.');
