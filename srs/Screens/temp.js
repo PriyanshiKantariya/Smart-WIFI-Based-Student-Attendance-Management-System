@@ -6,11 +6,6 @@ import { getUsername } from '../Components/utility';
 import io from 'socket.io-client';
 import NetInfo from '@react-native-community/netinfo';
 import * as Location from 'expo-location';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-
-const socket = io('https://socket-api-a3lh.onrender.com');
-
 
 const fetchExpoToken = async () => {
     let token;
@@ -57,7 +52,7 @@ function Uname() {
     return name;
 }
 
-
+const socket = io('https://socket-api-a3lh.onrender.com');
 
 export default function Home() {
     const usen = Uname();
@@ -65,7 +60,6 @@ export default function Home() {
     const [sessionData, setSessionData] = useState({});
     const isAttendedRef = useRef(false);
     const [routermac, setroutermac] = useState('');
-
 
 
     useEffect(() => {

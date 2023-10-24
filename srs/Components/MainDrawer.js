@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // or another icon library of your choice
 import Home from '../Screens/Home';
 import AttendanceReport from '../Screens/AttendanceReport';
 import { getUsername } from './utility';
+import { Button } from 'react-native-paper';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,11 +40,13 @@ export default function MainDrawer() {
 
                   return <Ionicons name={iconName} size={size} color={color} />;
               },
-              tabBarActiveTintColor: 'purple',
+              tabBarActiveTintColor: '#6850a4',
               tabBarInactiveTintColor: 'gray',
               tabBarStyle: [
                   {
-                      display: 'flex'
+                      display: 'flex',
+                      borderTopWidth: 1.5,
+                    borderColor: '#6850a4'
                   },
                   null
               ]
@@ -51,7 +54,9 @@ export default function MainDrawer() {
       >
           <Tab.Screen name="Home" component={Home} options={{
               headerRight: () => (
+            
                   <Text style={{ marginRight: 10, fontWeight: "bold" }}><Header /></Text>
+                  
               ),
           }} />
           <Tab.Screen name="Attendance Details" component={AttendanceReport} />
