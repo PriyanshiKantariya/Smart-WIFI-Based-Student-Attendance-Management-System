@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "773612055911",
-    "project_id": "studattn",
-    "storage_bucket": "studattn.appspot.com"
+    "project_number": "834801185974",
+    "project_id": "student-attendance-b5e91",
+    "storage_bucket": "student-attendance-b5e91.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:773612055911:android:134bc410c1b42d434f53c2",
+        "mobilesdk_app_id": "1:834801185974:android:23dec0588142c37930a217",
         "android_client_info": {
-          "package_name": "com.meetgoti07.StudAttn"
+          "package_name": "com.meetgoti07.stud"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDqSkNUU7rufp6UNgz6M4ZXkSCKNDBh5qI"
+          "current_key": "AIzaSyBssjQmVTaBU8VqdbtlLyYCs3Q7K-0zP9o"
         }
       ],
       "services": {

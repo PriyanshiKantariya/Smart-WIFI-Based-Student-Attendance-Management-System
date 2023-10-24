@@ -1,43 +1,41 @@
 {
   "expo": {
-    "name": "StudAttn",
-    "slug": "StudAttn",
+    "name": "Student Attendance",
+    "slug": "studattn",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.meetgoti07.StudAttn"
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to access nearby WiFi networks."
+      }
     },
     "android": {
-      "googleServicesFile": "./google-services.json",
+
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.meetgoti07.StudAttn"
+      "package": "com.meetgoti07.stud",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_WIFI_STATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "notification": {
-      "icon": "./assets/icon.png",
-      "color": "#ffffff",
-      "iosDisplayInForeground": true
-    },
     "extra": {
       "eas": {
-        "projectId": "93a708d0-1ba4-448a-9472-ebc854647580"
+        "projectId": "19f085da-f1f0-4131-ae13-bbc23d073ef5"
       }
-    }
+    },
+    "owner": "meetgoti07"
   }
 }

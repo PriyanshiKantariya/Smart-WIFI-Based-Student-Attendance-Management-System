@@ -1,4 +1,4 @@
-// LoginPage.js
+    // LoginPage.js
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text,TextInput, Alert } from 'react-native';
 import { AuthContext } from '../Components/authContext';

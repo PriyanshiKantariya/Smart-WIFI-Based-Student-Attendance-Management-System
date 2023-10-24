@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -9,7 +9,7 @@ import { getname } from '../Components/utility';
 
 const socket = io('https://socket-api-a3lh.onrender.com');
 
-function useUname() { // Rename to signify it's a hook
+function useUname() {
   const [name, setName] = useState('');
 
   useEffect(() => {
@@ -25,7 +25,8 @@ function useUname() { // Rename to signify it's a hook
 
   return name;
 }
-function usename() { // Rename to signify it's a hook
+
+function usename() {
   const [namee, setNamee] = useState('');
 
   useEffect(() => {
@@ -43,9 +44,10 @@ function usename() { // Rename to signify it's a hook
 }
 
 function App() {
-  const userName = useUname(); // Use the custom hook
+  const userName = useUname();
   const name = usename();
   const [attendanceStarted, setAttendanceStarted] = useState(false);
+  const attendanceIntervalRef = useRef(null);
 
   const [openclass, setOpenclass] = useState(false);
   const [valueclass, setValueclass] = useState(null);
@@ -59,21 +61,15 @@ function App() {
   const [valueroom, setValueroom] = useState(null);
   const [itemsroom, setItemsroom] = useState([]);
 
-
-
-
-
   useEffect(() => {
     socket.on('connect', () => {
       socket.emit('joinRollNumberRoom', userName);
     });
 
-    // Your fetching functions go here.
     fetchClassValues();
     fetchSubjectValues();
     fetchRoomValues();
 
-    // Cleanup
     return () => {
       socket.off('connect');
     };
@@ -88,27 +84,71 @@ function App() {
         mac: valueroom,
     };
 
-
-    if(!data.teacherUsername || !data.selectedSubject || !data.mac || !data.batch) {
+    if (!data.teacherUsername || !data.selectedSubject || !data.mac || !data.batch) {
         Alert.alert('Choose all Options from Dropdown');
     } else {
         socket.emit('sendMessageToClass', { batch: valueclass, data });
         setAttendanceStarted(true);
 
-        // Send push notification
         try {
             await axios.post('https://teach-node.onrender.com/send-notification', {
-                batch: valueclass, // Pass the batch value here
+                batch: valueclass,
                 title: "New Attendance Session",
                 message: `Attendance started by ${name} for subject ${data.selectedSubject}. Please mark your attendance.`
             });
         } catch (error) {
             console.error("Error sending notification:", error);
         }
+
+        // Start interval
+        attendanceIntervalRef.current = setInterval(() => {
+            socket.emit('sendMessageToClass', { batch: valueclass, data });
+            console.log('sent');
+        }, 3000);
     }
-};
+  };
 
+  const handleAttendanceStop = () => {
+    setAttendanceStarted(false);
+    
+    const data = {
+      teacherUsername: name,
+      selectedSubject: valuesubject,
+      batch: valueclass,
+      visible : false,
+      mac : valueroom,
+    };
 
+    socket.emit('sendMessageToClass', { batch: valueclass, data });
+    setValueclass(null);
+    setValuesubject(null);
+    setValueroom(null);
+
+    // Clear the interval
+        clearInterval(attendanceIntervalRef.current);
+        attendanceIntervalRef.current = null;
+        console.log('stop');
+    
+    markAbsentees();
+  };
+
+  const markAbsentees = async () => {
+    try {
+      const response = await axios.post('https://teach-node.onrender.com/mark-absentees', {
+        subjectID: valuesubject,  // Assuming this is the ID of the subject
+        batch: valueclass,
+        date: new Date().toISOString().slice(0, 10)  // Today's date in YYYY-MM-DD format
+      });
+      console.log("called");
+      console.log(new Date().toISOString().slice(0, 10));
+  
+      if (!response.data.success) {
+        console.error('Error marking absentees:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error marking absentees:', error);
+    }
+  }
 
   const fetchSubjectValues = async () => {
     try {
@@ -121,25 +161,6 @@ function App() {
     } catch (error) {
       console.error('Error fetching values:', error);
     }
-  };
-
-  const handleAttendanceStop = () => {
-    setAttendanceStarted(false); // Set attendance mode to stopped
-
-    const data = {
-      teacherUsername: name, // Use userName from hook
-      selectedSubject: valuesubject,
-      batch: valueclass,
-      visible : false,
-      mac : valueroom,
-    };
-    
-    socket.emit('sendMessageToClass', { batch: valueclass, data });
-        // Reset values of dropdowns
-        setValueclass(null);
-        setValuesubject(null);
-        setValueroom(null);
-
   };
 
   const fetchClassValues = async () => {
